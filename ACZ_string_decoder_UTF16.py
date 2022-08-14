@@ -79,7 +79,7 @@ def string_decoder():
 ## //Open needed files
 
 string_parameter_file = open("0006.unk", "rb")
-string_data_file = open("0005.unk", "rb")
+string_data_file = open("0007.unk", "rb")
 
 ## //Retrieve parameters from "string_parameter_file"
 
