@@ -20,7 +20,8 @@ def padding_skip(current_position):
             break
         else:
             pass
-    return string_data_file.seek(string_data_file.tell(), 0)
+    skip_to = string_data_file.seek(string_data_file.tell(), 0)
+    return skip_to
 
 def string_decoder():
     ## Initialize arrays
