@@ -58,7 +58,7 @@ with open(lines_file, 'rb') as lf:
 
     aux = lf.tell() # Save position from before padding
     aux2 = padding_skip(lf.tell(), lf) -4 # Save end of padding position
-    lf.seek(452) # Go back to before padding
+    lf.seek(aux) # Go back to before padding
 
     spker_padding1 = lf.read(aux2 - aux) # Read padding
 
