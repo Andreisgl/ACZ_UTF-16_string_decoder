@@ -71,9 +71,7 @@ def file_divider():
         spkr_sd = lf.read(spker_sd_size *2) # sd = "string data"
         
         padding_length = line_fill(lf.tell(), 16) # How many bytes to add as end-of-line padding
-        for i in range(padding_length):
-            spkr_sd += b'\00'
-            lf.seek(1, 1)
+        spkr_sd += lf.read(padding_length)
         print()
 
 check_files()
