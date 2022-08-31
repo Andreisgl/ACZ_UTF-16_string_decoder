@@ -47,6 +47,7 @@ check_files()
 with open(lines_file, 'rb') as lf:
     # Divide file into important data and sections
     
+    #SPEAKER ID
     spkr_nol = lf.read(4) # nol = "number of lines"
     spkr_csl = lf.read(2) # csl = "character set lenght"
     spkr_unk1 = lf.read(10) # Unknown part
@@ -72,7 +73,11 @@ with open(lines_file, 'rb') as lf:
     
     padding_length = line_fill(lf.tell(), 16) # How many bytes to add as end-of-line padding
     spkr_sd += lf.read(padding_length)
-    print()
+    
+    ## Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
+    lf.seek((int.from_bytes(spkr_csl, "little") * 512) + 64 + lf.tell(), 0)
+
+    #VOICE LINES
 
 
 
