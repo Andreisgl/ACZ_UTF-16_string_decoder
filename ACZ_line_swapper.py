@@ -78,16 +78,27 @@ def text_splitter(initial_position):
 
 check_files()
 
-speaker_data_list = []
-voice_data_list = []
+speaker_data_list = [] # List containing speaker text sections separated, in order.
+interstitial1 = "" # Section between speaker and radio lines
+voice_data_list = [] # List containing radio text sections separated, in order.
+interstitial2 = "" # Section between radio lines and end of file
 
 speaker_data_list = text_splitter(0)
-## Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
+# Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
 voice_lines_position = (int.from_bytes(speaker_data_list[1], "little") * 512) + 64 + speaker_data_list[8]
-
 voice_data_list = text_splitter(voice_lines_position)
 
-
+# Obtain interstitials:
+with open(lines_file, "rb") as lf:
+    # interstitial1:
+    begin_pos = speaker_data_list[8]
+    lf.seek(begin_pos)
+    interstitial1 = lf.read(voice_lines_position - begin_pos)
+    # interstitial2:
+    begin_pos = voice_data_list[8]
+    end_pos = lf.seek(0, 2)
+    lf.seek(begin_pos)
+    interstitial2 = lf.read(end_pos - begin_pos)
 
 
 
