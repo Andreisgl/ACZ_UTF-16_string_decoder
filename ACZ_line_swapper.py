@@ -53,24 +53,24 @@ def text_splitter(initial_position):
         spkr_csl = lf.read(2) # csl = "character set lenght"
         spkr_unk1 = lf.read(10) # Unknown part
         
-        spker_cs = lf.read(16 * int.from_bytes(spkr_csl, "little")) # Read whole cs section
+        spkr_cs = lf.read(16 * int.from_bytes(spkr_csl, "little")) # Read whole cs section
 
-        spker_sls = lf.read(int.from_bytes(spkr_nol, "little") * 2)# sls = "string lengths"
+        spkr_sls = lf.read(int.from_bytes(spkr_nol, "little") * 2)# sls = "string lengths"
 
         aux = lf.tell() # Save position from before padding
         aux2 = padding_skip(lf.tell(), lf) -4 # Save end of padding position
         lf.seek(aux) # Go back to before padding
 
-        spker_padding1 = lf.read(aux2 - aux) # Read padding
+        spkr_padding1 = lf.read(aux2 - aux) # Read padding
 
         spkr_so = lf.read(int.from_bytes(spkr_nol, "little") * 4) # so = "sring offset"
 
-        spker_sd_size = 0
-        for i in range(0, int(len(spker_sls)), 2): # Iterate bytes to sum them, 2 by 2
-            b = spker_sls[i].to_bytes(1, "little") + spker_sls[i+1].to_bytes(1, "little")
-            spker_sd_size += int.from_bytes(b, byteorder = "little")  
+        spkr_sd_size = 0
+        for i in range(0, int(len(spkr_sls)), 2): # Iterate bytes to sum them, 2 by 2
+            b = spkr_sls[i].to_bytes(1, "little") + spkr_sls[i+1].to_bytes(1, "little")
+            spkr_sd_size += int.from_bytes(b, byteorder = "little")  
 
-        spkr_sd = lf.read(spker_sd_size *2) # sd = "string data"
+        spkr_sd = lf.read(spkr_sd_size *2) # sd = "string data"
         
         padding_length = line_fill(lf.tell(), 16) # How many bytes to add as end-of-line padding
         spkr_sd += lf.read(padding_length)
