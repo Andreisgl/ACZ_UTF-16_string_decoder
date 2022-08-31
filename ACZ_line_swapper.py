@@ -42,8 +42,6 @@ def line_fill(curr_offset, line_size):
     else:
         return 0
 
-check_files()
-
 def text_splitter(initial_position):
     with open(lines_file, 'rb') as lf:
         # Divide file into important data and sections
@@ -74,10 +72,14 @@ def text_splitter(initial_position):
         
         padding_length = line_fill(lf.tell(), 16) # How many bytes to add as end-of-line padding
         spkr_sd += lf.read(padding_length)
-        
-        ## Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
-        lf.seek((int.from_bytes(spkr_csl, "little") * 512) + 64 + lf.tell(), 0)
+        end_position = lf.tell()
+    return [spkr_nol, spkr_csl, spkr_unk1, spkr_cs, spkr_sls, spkr_padding1, spkr_so, spkr_sd, end_position]
 
+check_files()
+
+speaker_file_list = text_splitter(0)
+## Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
+voice_lines_position = (int.from_bytes(speaker_file_list[1], "little") * 512) + 64 + speaker_file_list[8]
 
 
 
