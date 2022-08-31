@@ -76,6 +76,7 @@ def text_splitter(initial_position):
         end_position = lf.tell()
     return [spkr_nol, spkr_csl, spkr_unk1, spkr_cs, spkr_sls, spkr_padding1, spkr_so, spkr_sd, end_position]
 
+
 check_files()
 
 speaker_data_list = [] # List containing speaker text sections separated, in order.
