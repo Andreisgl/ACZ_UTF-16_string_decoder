@@ -47,6 +47,7 @@ def text_splitter(initial_position):
         # Divide file into important data and sections
         
         #SPEAKER ID
+        lf.seek(initial_position)
         spkr_nol = lf.read(4) # nol = "number of lines"
         spkr_csl = lf.read(2) # csl = "character set lenght"
         spkr_unk1 = lf.read(10) # Unknown part
@@ -77,9 +78,14 @@ def text_splitter(initial_position):
 
 check_files()
 
-speaker_file_list = text_splitter(0)
+speaker_data_list = []
+voice_data_list = []
+
+speaker_data_list = text_splitter(0)
 ## Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
-voice_lines_position = (int.from_bytes(speaker_file_list[1], "little") * 512) + 64 + speaker_file_list[8]
+voice_lines_position = (int.from_bytes(speaker_data_list[1], "little") * 512) + 64 + speaker_data_list[8]
+
+voice_data_list = text_splitter(voice_lines_position)
 
 
 
