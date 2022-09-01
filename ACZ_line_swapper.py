@@ -81,6 +81,7 @@ def choose_working_folder():
     print()
 
 def check_files_in_folder():
+    global file_list
     file_list = os.listdir(current_folder)
     try:
         for i in range(len(file_list)):
@@ -113,10 +114,19 @@ def check_files_in_folder():
     sil.append( short_file_list.index(radio_so))
     sil.append( short_file_list.index(radio_sd))
     sil.append( short_file_list.index(interstitial2_interstitial2))
+    print()
     
     
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
-    
+    nol = current_folder + "/" + file_list[nol]
+    csl = current_folder + "/" + file_list[csl]
+    nol = current_folder + "/" + file_list[unk]
+    cs = current_folder + "/" + file_list[cs]
+    sls = current_folder + "/" + file_list[sls]
+    padd1 = current_folder + "/" + file_list[padd1]
+    so = current_folder + "/" + file_list[so]
+    sd = current_folder + "/" + file_list[sd]
+
     print()
 
 current_folder = choose_working_folder()
