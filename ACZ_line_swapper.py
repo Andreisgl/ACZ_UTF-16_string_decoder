@@ -116,16 +116,72 @@ def check_files_in_folder():
     sil.append( short_file_list.index(interstitial2_interstitial2))
     print()
     
-    
+def padding_skip(current_position, string_data_file):
+    ## Set zero padding skipping function:
+    ## What this will do is to go where the position before the fuction was called then 
+    ## read two bytes and convert them to a integer. If the integer is equal to zero
+    ## then continue reading moving through the file two places at time and skipping any padding there might be.
+    ## When the condition is not longer met move two places back to make up for the read bytes,
+    ## break the WHILE loop then update the current position in the file to where the padding area ends.
+    string_data_file.seek(current_position, 0)
+    while True:
+        zero_check = int.from_bytes(string_data_file.read(2), "little")
+        if zero_check != 0:
+            string_data_file.seek(-2, 1)
+            break
+        else:
+            pass
+    skip_to = string_data_file.seek(string_data_file.tell(), 0)
+    return skip_to
+
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
-    nol = current_folder + "/" + file_list[unk]
+    unk = current_folder + "/" + file_list[unk]
     cs = current_folder + "/" + file_list[cs]
     sls = current_folder + "/" + file_list[sls]
     padd1 = current_folder + "/" + file_list[padd1]
     so = current_folder + "/" + file_list[so]
     sd = current_folder + "/" + file_list[sd]
+
+    number_of_lines = 0
+    character_set_length = 0
+    character_set = []
+    string_lengths = []
+    string_offset = []
+    string_data = []
+
+    with open(nol, "rb") as nol:
+        number_of_lines = int.from_bytes(nol.read(4), "little")
+    with open(csl, "rb") as csl:
+        character_set_length = int.from_bytes(csl.read(2), "little")
+    with open(cs, "rb") as cs:
+        ## Get the ASCII characters and append them to a list then skip the rest
+        for i in range(character_set_length):
+            null = cs.read(8)
+            is_this_character_printable = (cs.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
+            if (is_this_character_printable.isprintable()):
+                character_set.append(is_this_character_printable)
+            else:
+                character_set.append(" ")
+            null = cs.read(6)
+    with open(sls, "rb") as sls:
+        ## Get the length of individual strings
+        for i in range(number_of_lines):
+            string_lengths.append(int.from_bytes(sls.read(2), "little"))
+    with open(so, "rb") as so:
+        ## Skip padding but subtract 4 from the returned position since the last skipped 4 bytes is an offset value
+        padding_skip(so.tell(), so)
+        so.seek(-4, 1)
+        ## Get the string position on the string data
+        for i in range(number_of_lines):
+            string_offset.append(int.from_bytes(so.read(4), "little"))
+    with open(sd, "rb") as sd:
+        ## And finally, get the string data.
+        ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
+        for i in range(sum(string_lengths)):
+            string_data.append(int.from_bytes(sd.read(2), "little"))
+
 
     print()
 
