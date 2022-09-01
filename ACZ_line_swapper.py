@@ -158,6 +158,8 @@ def line_decoder(encoded_lines, character_set):
             current_line.append(character_set[encoded_lines[i][j]])
         decoded_lines.append(current_line)
     return decoded_lines
+def line_re_encoder():
+    print()
 
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
@@ -217,6 +219,16 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     # Re-unite encoded lists into raw string data
     re_united_lines = []
     
+    # Export lines to .txt
+    test_export_file = "line_export.txt"
+    with open(test_export_file, "w", encoding = "utf-16") as tef:
+        for i in range(len(decoded_lines)):
+            line_data = ""
+            for j in range(len(decoded_lines[i])):
+                line_data += decoded_lines[i][j]        
+            tef.write(line_data + "\n")
+    print()  
+
 
     print()
 
