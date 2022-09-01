@@ -1,1 +1,4 @@
+*.txt
 *.unk
+*.dbg
+*.spl

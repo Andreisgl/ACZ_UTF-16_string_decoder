@@ -20,7 +20,8 @@ def padding_skip(current_position):
             break
         else:
             pass
-    return string_data_file.seek(string_data_file.tell(), 0)
+    skip_to = string_data_file.seek(string_data_file.tell(), 0)
+    return skip_to
 
 def string_decoder():
     ## Initialize arrays
@@ -164,7 +165,7 @@ decoded_string_list = string_decoder_retuned_data[0]
 output_file = open("acz_output_mission_strings.txt", "w", encoding="utf-16")
 
 for i in range(amount_of_string_parameters):
-    full_string = decoded_speaker_id_string_list[speaker_id_list[i]] + ": " + decoded_string_list[string_id_list[i]]
+    full_string = str(string_id_list[i]) + " - " + decoded_speaker_id_string_list[speaker_id_list[i]] + "(" + str(speaker_id_list[i]) + ")" + ": " + decoded_string_list[string_id_list[i]]
     output_file.write(full_string + "\n")
 
 output_file.close()
