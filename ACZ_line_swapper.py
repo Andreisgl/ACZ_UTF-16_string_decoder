@@ -207,8 +207,15 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
         for i in range(sum(string_lengths)):
             string_data.append(int.from_bytes(sd.read(2), "little"))
 
+    # Separate string data into lists
     encoded_lines = split_lines(number_of_lines, string_lengths, string_data)
+    # Decode lists from to readable text
     decoded_lines = line_decoder(encoded_lines, character_set)
+
+    # Re-encode line lists based on character set
+    re_encoded_lines = []
+    # Re-unite encoded lists into raw string data
+    re_united_lines = []
     
 
     print()
