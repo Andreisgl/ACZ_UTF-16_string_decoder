@@ -102,5 +102,21 @@ with open(lines_file, "rb") as lf:
     interstitial2 = lf.read(end_pos - begin_pos)
 
 
+######
+test_file = "ddd.dbg"
+with open(test_file, "wb") as f:
+    # Speaker
+    for i in range(len(speaker_data_list) -1):
+        f.write(speaker_data_list[i])
+    
+    # Interstitial1
+    f.write(interstitial1)
+
+    # Voice lines
+    for i in range(len(voice_data_list) -1):
+        f.write(voice_data_list[i])
+    
+    # Interstitial2
+    f.write(interstitial2)
 
 print("end")
