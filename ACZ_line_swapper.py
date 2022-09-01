@@ -8,6 +8,7 @@
 from cgitb import text
 import os
 import shutil
+from sqlite3 import ProgrammingError
 from sys import byteorder
 
 basedir = os.getcwd()
@@ -182,7 +183,14 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
         for i in range(sum(string_lengths)):
             string_data.append(int.from_bytes(sd.read(2), "little"))
 
-
+    encoded_lines = [] # Splits "string_data" based on "string_lengths"
+    progress = 0
+    for i in range(number_of_lines):
+        data = []
+        for j in range(string_lengths[i]):
+            data.append(string_data[j+ progress])
+        progress = j + 1
+        encoded_lines.append(data)
     print()
 
 current_folder = choose_working_folder()
