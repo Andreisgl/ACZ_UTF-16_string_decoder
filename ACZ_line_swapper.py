@@ -183,15 +183,28 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
         for i in range(sum(string_lengths)):
             string_data.append(int.from_bytes(sd.read(2), "little"))
 
-    encoded_lines = [] # Splits "string_data" based on "string_lengths"
+    # Split "string_data" based on "string_lengths"
+    encoded_lines = [] 
     progress = 0
     for i in range(number_of_lines):
         data = []
         for j in range(string_lengths[i]):
-            data.append(string_data[j+ progress])
-        progress = j + 1
+            data.append(string_data[j + progress])
+        progress += j + 1
         encoded_lines.append(data)
+    
+    # Decode encoded lines based on character set
+    decoded_lines = []
+    for i in range(len(encoded_lines)):
+        current_line = []
+        for j in range(len(encoded_lines[i])):
+            current_line.append(character_set[encoded_lines[i][j]])
+        decoded_lines.append(current_line)
+    
+
     print()
+
+
 
 current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
