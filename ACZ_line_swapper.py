@@ -11,7 +11,7 @@ from sys import byteorder
 basedir = os.getcwd()
 lines_file = "0007.unk"
 
-
+# FILE STRIPPING METHODS
 def check_files():
     global lines_file
     lines_file = basedir + "/" + lines_file
@@ -42,6 +42,11 @@ def line_fill(curr_offset, line_size):
     else:
         return 0
 
+# Splits the text parts into blocks.
+# Receives the beginning position of the block as parameter,
+# Returns list 8 positions long.
+# Positions 0-6 are the actual data,
+# Position 7 is the end offset of list.
 def text_splitter(initial_position):
     with open(lines_file, 'rb') as lf:
         # Divide file into important data and sections
@@ -75,6 +80,10 @@ def text_splitter(initial_position):
         spkr_sd += lf.read(padding_length)
         end_position = lf.tell()
     return [spkr_nol, spkr_csl, spkr_unk1, spkr_cs, spkr_sls, spkr_padding1, spkr_so, spkr_sd, end_position]
+
+# EXPORT SPLITTED PARTS METHODS
+
+
 
 
 check_files()
