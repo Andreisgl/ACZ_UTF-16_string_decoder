@@ -135,6 +135,30 @@ def padding_skip(current_position, string_data_file):
     skip_to = string_data_file.seek(string_data_file.tell(), 0)
     return skip_to
 
+# Splits lines from raw data
+def split_lines(number_of_lines, string_lengths, string_data):
+    # Split "string_data" based on "string_lengths"
+    encoded_lines = [] 
+    progress = 0
+    for i in range(number_of_lines):
+        data = []
+        for j in range(string_lengths[i]):
+            data.append(string_data[j + progress])
+        progress += j + 1
+        encoded_lines.append(data)
+    return encoded_lines
+
+# Decodes lines previously split into lists by "split_lines"
+def line_decoder(encoded_lines, character_set):
+    # Decode encoded lines based on character set
+    decoded_lines = []
+    for i in range(len(encoded_lines)):
+        current_line = []
+        for j in range(len(encoded_lines[i])):
+            current_line.append(character_set[encoded_lines[i][j]])
+        decoded_lines.append(current_line)
+    return decoded_lines
+
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
@@ -183,23 +207,8 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
         for i in range(sum(string_lengths)):
             string_data.append(int.from_bytes(sd.read(2), "little"))
 
-    # Split "string_data" based on "string_lengths"
-    encoded_lines = [] 
-    progress = 0
-    for i in range(number_of_lines):
-        data = []
-        for j in range(string_lengths[i]):
-            data.append(string_data[j + progress])
-        progress += j + 1
-        encoded_lines.append(data)
-    
-    # Decode encoded lines based on character set
-    decoded_lines = []
-    for i in range(len(encoded_lines)):
-        current_line = []
-        for j in range(len(encoded_lines[i])):
-            current_line.append(character_set[encoded_lines[i][j]])
-        decoded_lines.append(current_line)
+    encoded_lines = split_lines(number_of_lines, string_lengths, string_data)
+    decoded_lines = line_decoder(encoded_lines, character_set)
     
 
     print()
