@@ -310,8 +310,6 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
                 of.write(character_set[i].encode("utf-8", "little"))
                 of.write(b'\00')
                 of.write(padding2)
-
-                #is_this_character_printable = (of.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
         with open(sls, "rb") as of:
             ## Get the length of individual strings
             for i in range(number_of_lines):
