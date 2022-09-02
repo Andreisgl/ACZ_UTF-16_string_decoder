@@ -181,15 +181,22 @@ def line_re_encoder(recovered_lines):
 
     return encoded_list, new_character_set
 
-# Returns lines into a single simple list and string lengths
+# Returns lines into a single simple list, string offsets and string lengths
 def line_cs_re_uniter(line_list):
     raw_lines = []
+    string_offsets = []
     string_lenghts = []
     for i in range(len(line_list)):
         for j in range(len(line_list[i])):
             raw_lines.append(line_list[i][j])
         string_lenghts.append(j + 1)
-    return raw_lines, string_lenghts
+    
+    string_offsets.append(0)
+    current_offset = 0
+    for i in range(len(string_lenghts)):
+        current_offset += string_lenghts[i]
+        string_offsets.append(current_offset)
+    return raw_lines, string_offsets, string_lenghts
 
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
@@ -257,6 +264,7 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     #        if i < len(decoded_lines) - 1:
     #            tf.write("\n")
 
+
     # Recover lines from .txt
     recovered_lines = []
     with open(test_file, "r") as tf:
@@ -265,11 +273,16 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     
     # Re-encode line lists based on character set
     re_encoded_lines, new_character_set = line_re_encoder(recovered_lines)
-    
-    
     # Re-unite encoded lists into raw string data
-    re_united_lines, new_string_lengths = line_cs_re_uniter(re_encoded_lines)
-
+    re_united_lines, new_string_offsets, new_string_lengths = line_cs_re_uniter(re_encoded_lines)
+    
+    # Set new values for file sections:
+    #number_of_lines
+    character_set_length = len(new_character_set) + 1
+    character_set = new_character_set
+    string_lengths = new_string_lengths
+    string_offset = new_string_offsets
+    string_data = re_united_lines
 
     print()
 
