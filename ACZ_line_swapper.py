@@ -311,7 +311,6 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
                 of.write(b'\00')
                 of.write(padding2)
         with open(sls, "wb") as of:
-            ## Get the length of individual strings
             for i in range(current_nol):
                 of.write(string_lengths[i].to_bytes(2, "little"))
         with open(so, "wb") as of:
