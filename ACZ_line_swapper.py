@@ -198,7 +198,11 @@ def line_cs_re_uniter(line_list):
         string_offsets.append(current_offset)
     return raw_lines, string_offsets, string_lenghts
 
-def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
+# Receives each relevant section as parameter.
+# First parameter = mode:
+#   mode = 0: Read
+#   mode = 1: Write
+def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
     unk = current_folder + "/" + file_list[unk]
@@ -215,75 +219,116 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     string_offset = []
     string_data = []
 
-    with open(nol, "rb") as nol:
-        number_of_lines = int.from_bytes(nol.read(4), "little")
-    with open(csl, "rb") as csl:
-        character_set_length = int.from_bytes(csl.read(2), "little")
-    with open(cs, "rb") as cs:
-        ## Get the ASCII characters and append them to a list then skip the rest
-        for i in range(character_set_length):
-            null = cs.read(8)
-            is_this_character_printable = (cs.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
-            if (is_this_character_printable.isprintable()):
-                character_set.append(is_this_character_printable)
-            else:
-                character_set.append(" ")
-            null = cs.read(6)
-    with open(sls, "rb") as sls:
-        ## Get the length of individual strings
-        for i in range(number_of_lines):
-            string_lengths.append(int.from_bytes(sls.read(2), "little"))
-    with open(so, "rb") as so:
-        ## Skip padding but subtract 4 from the returned position since the last skipped 4 bytes is an offset value
-        padding_skip(so.tell(), so)
-        so.seek(-4, 1)
-        ## Get the string position on the string data
-        for i in range(number_of_lines):
-            string_offset.append(int.from_bytes(so.read(4), "little"))
-    with open(sd, "rb") as sd:
-        ## And finally, get the string data.
-        ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
-        for i in range(sum(string_lengths)):
-            string_data.append(int.from_bytes(sd.read(2), "little"))
+    if mode == 0: # Read mode
+        with open(nol, "rb") as of:
+            number_of_lines = int.from_bytes(of.read(4), "little")
+        with open(csl, "rb") as of:
+            character_set_length = int.from_bytes(of.read(2), "little")
+        with open(cs, "rb") as of:
+            ## Get the ASCII characters and append them to a list then skip the rest
+            for i in range(character_set_length):
+                null = of.read(8)
+                is_this_character_printable = (of.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
+                if (is_this_character_printable.isprintable()):
+                    character_set.append(is_this_character_printable)
+                else:
+                    character_set.append(" ")
+                null = of.read(6)
+        with open(sls, "rb") as of:
+            ## Get the length of individual strings
+            for i in range(number_of_lines):
+                string_lengths.append(int.from_bytes(of.read(2), "little"))
+        with open(so, "rb") as of:
+            ## Skip padding but subtract 4 from the returned position since the last skipped 4 bytes is an offset value
+            padding_skip(of.tell(), of)
+            of.seek(-4, 1)
+            ## Get the string position on the string data
+            for i in range(number_of_lines):
+                string_offset.append(int.from_bytes(of.read(4), "little"))
+        with open(sd, "rb") as of:
+            ## And finally, get the string data.
+            ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
+            for i in range(sum(string_lengths)):
+                string_data.append(int.from_bytes(of.read(2), "little"))
 
-    # Separate string data into lists
-    encoded_lines = split_lines(number_of_lines, string_lengths, string_data)
-    # Decode lists from to readable text
-    decoded_lines = line_decoder(encoded_lines, character_set)
+        # Separate string data into lists
+        encoded_lines = split_lines(number_of_lines, string_lengths, string_data)
+        # Decode lists from to readable text
+        decoded_lines = line_decoder(encoded_lines, character_set)
+
+        
+        
+        # Export lines to .txt
+        test_file = "line_export.txt"
+        #with open(test_file, "w") as tf:
+        #    for i in range(len(decoded_lines)):
+        #        line_data = ""
+        #        for j in range(len(decoded_lines[i])):
+        #            line_data += decoded_lines[i][j]        
+        #        tf.write(line_data)
+        #        if i < len(decoded_lines) - 1:
+        #            tf.write("\n")
+    else: # Write mode
+
+        # Recover lines from .txt
+        recovered_lines = []
+        with open(test_file, "r") as tf:
+            data = tf.read()
+            recovered_lines = data.split("\n")
+        
+        # Re-encode line lists based on character set
+        re_encoded_lines, new_character_set = line_re_encoder(recovered_lines)
+        # Re-unite encoded lists into raw string data
+        re_united_lines, new_string_offsets, new_string_lengths = line_cs_re_uniter(re_encoded_lines)
+        
+        # Set new values for file sections:
+        current_nol = len(recovered_lines) # Check if number of lines changed.
+        if number_of_lines != current_nol:
+            print("HEY! The number of lines changed! Check file again!\n")
+            print("The number of lines should be: " + number_of_lines)
+            print("The current number of is: " + str(current_nol))
+            input("I'll let that pass because I'm lazy. Press ENTER to continue")
+
+        character_set_length = len(new_character_set) + 1
+        character_set = new_character_set
+        string_lengths = new_string_lengths
+        string_offset = new_string_offsets
+        string_data = re_united_lines
+
+        # Rewrite new data into their files.
+        
+        with open(csl, "wb") as of:
+            of.write(int.to_bytes(character_set_length, "little"))
+        with open(cs, "rb") as of:
+            ## Get the ASCII characters and append them to a list then skip the rest
+            for i in range(character_set_length):
+                null = of.read(8)
+                is_this_character_printable = (of.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
+                if (is_this_character_printable.isprintable()):
+                    character_set.append(is_this_character_printable)
+                else:
+                    character_set.append(" ")
+                null = of.read(6)
+        with open(sls, "rb") as of:
+            ## Get the length of individual strings
+            for i in range(number_of_lines):
+                string_lengths.append(int.from_bytes(of.read(2), "little"))
+        with open(so, "rb") as of:
+            ## Skip padding but subtract 4 from the returned position since the last skipped 4 bytes is an offset value
+            padding_skip(of.tell(), of)
+            of.seek(-4, 1)
+            ## Get the string position on the string data
+            for i in range(number_of_lines):
+                string_offset.append(int.from_bytes(of.read(4), "little"))
+        with open(sd, "rb") as of:
+            ## And finally, get the string data.
+            ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
+            for i in range(sum(string_lengths)):
+                string_data.append(int.from_bytes(of.read(2), "little"))
+
+
 
     
-    
-    # Export lines to .txt
-    test_file = "line_export.txt"
-    #with open(test_file, "w") as tf:
-    #    for i in range(len(decoded_lines)):
-    #        line_data = ""
-    #        for j in range(len(decoded_lines[i])):
-    #            line_data += decoded_lines[i][j]        
-    #        tf.write(line_data)
-    #        if i < len(decoded_lines) - 1:
-    #            tf.write("\n")
-
-
-    # Recover lines from .txt
-    recovered_lines = []
-    with open(test_file, "r") as tf:
-        data = tf.read()
-        recovered_lines = data.split("\n")
-    
-    # Re-encode line lists based on character set
-    re_encoded_lines, new_character_set = line_re_encoder(recovered_lines)
-    # Re-unite encoded lists into raw string data
-    re_united_lines, new_string_offsets, new_string_lengths = line_cs_re_uniter(re_encoded_lines)
-    
-    # Set new values for file sections:
-    #number_of_lines
-    character_set_length = len(new_character_set) + 1
-    character_set = new_character_set
-    string_lengths = new_string_lengths
-    string_offset = new_string_offsets
-    string_data = re_united_lines
-
     print()
 
 
@@ -292,6 +337,6 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
+manipulate_text(0, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
 
 print("end")
