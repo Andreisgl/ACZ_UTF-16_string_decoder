@@ -7,6 +7,7 @@
 
 from cgitb import text
 import os
+import re
 import shutil
 from sqlite3 import ProgrammingError
 from sys import byteorder
@@ -179,7 +180,16 @@ def line_re_encoder(recovered_lines):
 
 
     return encoded_list, new_character_set
-            
+
+# Returns lines into a single simple list and string lengths
+def line_cs_re_uniter(line_list):
+    raw_lines = []
+    string_lenghts = []
+    for i in range(len(line_list)):
+        for j in range(len(line_list[i])):
+            raw_lines.append(line_list[i][j])
+        string_lenghts.append(j + 1)
+    return raw_lines, string_lenghts
 
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
@@ -257,10 +267,8 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     re_encoded_lines, new_character_set = line_re_encoder(recovered_lines)
     
     
-    
-    
     # Re-unite encoded lists into raw string data
-    re_united_lines = []
+    re_united_lines, new_string_lengths = line_cs_re_uniter(re_encoded_lines)
 
 
     print()
