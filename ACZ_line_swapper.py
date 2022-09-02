@@ -219,6 +219,8 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
     string_offset = []
     string_data = []
 
+    test_file = "line_export.txt"
+
     if mode == 0: # Read mode
         with open(nol, "rb") as of:
             number_of_lines = int.from_bytes(of.read(4), "little")
@@ -259,7 +261,6 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         
         
         # Export lines to .txt
-        test_file = "line_export.txt"
         #with open(test_file, "w") as tf:
         #    for i in range(len(decoded_lines)):
         #        line_data = ""
@@ -283,11 +284,11 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         
         # Set new values for file sections:
         current_nol = len(recovered_lines) # Check if number of lines changed.
-        if number_of_lines != current_nol:
-            print("HEY! The number of lines changed! Check file again!\n")
-            print("The number of lines should be: " + number_of_lines)
-            print("The current number of is: " + str(current_nol))
-            input("I'll let that pass because I'm lazy. Press ENTER to continue")
+        #if number_of_lines != current_nol:
+        #    print("HEY! The number of lines changed! Check file again!\n")
+        #    print("The number of lines should be: " + str(number_of_lines))
+        #    print("The current number of is: " + str(current_nol))
+        #    input("I'll let that pass because I'm lazy. Press ENTER to continue")
 
         character_set_length = len(new_character_set) + 1
         character_set = new_character_set
@@ -298,17 +299,19 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         # Rewrite new data into their files.
         
         with open(csl, "wb") as of:
-            of.write(int.to_bytes(character_set_length, "little"))
-        with open(cs, "rb") as of:
+            of.write(int.to_bytes(character_set_length, 2, byteorder="little"))
+        with open(cs, "wb") as of:
             ## Get the ASCII characters and append them to a list then skip the rest
-            for i in range(character_set_length):
-                null = of.read(8)
-                is_this_character_printable = (of.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
-                if (is_this_character_printable.isprintable()):
-                    character_set.append(is_this_character_printable)
-                else:
-                    character_set.append(" ")
-                null = of.read(6)
+            for i in range(character_set_length - 1):
+                padding1 = b'\00\00\00\00\00\00\00\00'
+                padding2 = b'\00\00\00\00\00\00'
+                
+                of.write(padding1)
+                of.write(character_set[i].encode("utf-8", "little"))
+                of.write(b'\00')
+                of.write(padding2)
+
+                #is_this_character_printable = (of.read(2)).decode("utf-16", errors = "ignore") ## Run a small check and replacement rountine for non printable characters found in the set
         with open(sls, "rb") as of:
             ## Get the length of individual strings
             for i in range(number_of_lines):
