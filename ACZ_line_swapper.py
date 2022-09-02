@@ -337,6 +337,6 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(0, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
+manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
 
 print("end")
