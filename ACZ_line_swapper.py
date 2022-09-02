@@ -310,18 +310,18 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
                 of.write(character_set[i].encode("utf-8", "little"))
                 of.write(b'\00')
                 of.write(padding2)
-        with open(sls, "rb") as of:
+        with open(sls, "wb") as of:
             ## Get the length of individual strings
-            for i in range(number_of_lines):
-                string_lengths.append(int.from_bytes(of.read(2), "little"))
-        with open(so, "rb") as of:
+            for i in range(current_nol):
+                of.write(string_lengths[i].to_bytes(2, "little"))
+        with open(so, "wb") as of:
             ## Skip padding but subtract 4 from the returned position since the last skipped 4 bytes is an offset value
             padding_skip(of.tell(), of)
             of.seek(-4, 1)
             ## Get the string position on the string data
             for i in range(number_of_lines):
                 string_offset.append(int.from_bytes(of.read(4), "little"))
-        with open(sd, "rb") as of:
+        with open(sd, "wb") as of:
             ## And finally, get the string data.
             ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
             for i in range(sum(string_lengths)):
