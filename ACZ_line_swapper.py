@@ -220,14 +220,20 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     re_united_lines = []
     
     # Export lines to .txt
-    test_export_file = "line_export.txt"
-    with open(test_export_file, "w", encoding = "utf-16") as tef:
+    test_file = "line_export.txt"
+    with open(test_file, "w") as tf:
         for i in range(len(decoded_lines)):
             line_data = ""
             for j in range(len(decoded_lines[i])):
                 line_data += decoded_lines[i][j]        
-            tef.write(line_data + "\n")
-    print()  
+            tf.write(line_data)
+            if i < len(decoded_lines) - 1:
+                tf.write("\n")
+    # Recover lines from .txt
+    recovered_lines = []
+    with open(test_file, "r") as tf:
+        data = tf.read()
+        recovered_lines = data.split("\n")
 
 
     print()
