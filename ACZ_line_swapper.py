@@ -317,10 +317,8 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
             for i in range(current_nol):
                 of.write(string_offset[i].to_bytes(2, "little"))
         with open(sd, "wb") as of:
-            ## And finally, get the string data.
-            ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
-            for i in range(sum(string_lengths)):
-                string_data.append(int.from_bytes(of.read(2), "little"))
+            for i in range(len(string_data)):
+                of.write(string_data[i].to_bytes(2, "little"))
 
 
 
