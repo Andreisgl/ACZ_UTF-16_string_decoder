@@ -158,8 +158,28 @@ def line_decoder(encoded_lines, character_set):
             current_line.append(character_set[encoded_lines[i][j]])
         decoded_lines.append(current_line)
     return decoded_lines
-def line_re_encoder():
-    print()
+
+# Gets list of lines, returns a new character set and encodes the list
+def line_re_encoder(recovered_lines):
+    # Create character set
+    new_character_set = []
+    for i in range(len(recovered_lines)):
+        for j in range(len(recovered_lines[i])):
+            new_character_set.append(recovered_lines[i][j])
+            new_character_set = [*set(new_character_set)]
+            new_character_set.sort()
+    
+    # Encode list
+    encoded_list = []
+    for i in range(len(recovered_lines)):
+        current_line = []
+        for j in range(len(recovered_lines[i])):
+            current_line.append(new_character_set.index(recovered_lines[i][j]))
+        encoded_list.append(current_line)
+
+
+    return encoded_list, new_character_set
+            
 
 def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     nol = current_folder + "/" + file_list[nol]
@@ -214,26 +234,33 @@ def manipulate_text(nol, csl, unk, cs, sls, padd1, so, sd):
     # Decode lists from to readable text
     decoded_lines = line_decoder(encoded_lines, character_set)
 
-    # Re-encode line lists based on character set
-    re_encoded_lines = []
-    # Re-unite encoded lists into raw string data
-    re_united_lines = []
+    
     
     # Export lines to .txt
     test_file = "line_export.txt"
-    with open(test_file, "w") as tf:
-        for i in range(len(decoded_lines)):
-            line_data = ""
-            for j in range(len(decoded_lines[i])):
-                line_data += decoded_lines[i][j]        
-            tf.write(line_data)
-            if i < len(decoded_lines) - 1:
-                tf.write("\n")
+    #with open(test_file, "w") as tf:
+    #    for i in range(len(decoded_lines)):
+    #        line_data = ""
+    #        for j in range(len(decoded_lines[i])):
+    #            line_data += decoded_lines[i][j]        
+    #        tf.write(line_data)
+    #        if i < len(decoded_lines) - 1:
+    #            tf.write("\n")
+
     # Recover lines from .txt
     recovered_lines = []
     with open(test_file, "r") as tf:
         data = tf.read()
         recovered_lines = data.split("\n")
+    
+    # Re-encode line lists based on character set
+    re_encoded_lines, new_character_set = line_re_encoder(recovered_lines)
+    
+    
+    
+    
+    # Re-unite encoded lists into raw string data
+    re_united_lines = []
 
 
     print()
