@@ -318,11 +318,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
                 of.write(string_offset[i].to_bytes(4, "little"))
         with open(sd, "wb") as of:
             for i in range(len(string_data)):
-                of.write(string_data[i].to_bytes(2, "little"))
-
-
-
-    
+                of.write(string_data[i].to_bytes(2, "little"))  
     print()
 
 
@@ -332,5 +328,19 @@ current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
 manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
+
+
+# Repack whole file
+print()
+finished_file = current_folder+ "/" + "end.unk"
+
+with open(finished_file, "wb") as of:
+    for path in path_file_list:
+        with open(path, "rb") as section:
+            of.write(section.read())
+
+
+
+
 
 print("end")
