@@ -315,7 +315,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
                 of.write(string_lengths[i].to_bytes(2, "little"))
         with open(so, "wb") as of:
             for i in range(current_nol):
-                of.write(string_offset[i].to_bytes(2, "little"))
+                of.write(string_offset[i].to_bytes(4, "little"))
         with open(sd, "wb") as of:
             for i in range(len(string_data)):
                 of.write(string_data[i].to_bytes(2, "little"))
