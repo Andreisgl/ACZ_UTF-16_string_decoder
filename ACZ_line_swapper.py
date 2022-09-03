@@ -261,14 +261,14 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         
         
         # Export lines to .txt
-        #with open(test_file, "w") as tf:
-        #    for i in range(len(decoded_lines)):
-        #        line_data = ""
-        #        for j in range(len(decoded_lines[i])):
-        #            line_data += decoded_lines[i][j]        
-        #        tf.write(line_data)
-        #        if i < len(decoded_lines) - 1:
-        #            tf.write("\n")
+        with open(test_file, "w") as tf:
+            for i in range(len(decoded_lines)):
+                line_data = ""
+                for j in range(len(decoded_lines[i])):
+                    line_data += decoded_lines[i][j]        
+                tf.write(line_data)
+                if i < len(decoded_lines) - 1:
+                    tf.write("\n")
     else: # Write mode
 
         # Recover lines from .txt
@@ -303,8 +303,8 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         with open(cs, "wb") as of:
             ## Get the ASCII characters and append them to a list then skip the rest
             for i in range(character_set_length - 1):
-                padding1 = b'\00\00\00\00\00\00\00\00'
-                padding2 = b'\00\00\00\00\00\00'
+                padding1 = b'\x0A\00\x18\00\00\00\00\00'
+                padding2 = b'\x00\x00\xCD\xCD\xCD\xCD'
                 
                 of.write(padding1)
                 of.write(character_set[i].encode("utf-8", "little"))
