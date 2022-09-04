@@ -198,6 +198,12 @@ def line_cs_re_uniter(line_list):
         string_offsets.append(current_offset)
     return raw_lines, string_offsets, string_lenghts
 
+def line_fill(curr_offset, line_size):
+    if curr_offset % line_size != 0:
+        return ((int(curr_offset/16) + 1) * 16) - curr_offset
+    else:
+        return 0
+
 # Receives each relevant section as parameter.
 # First parameter = mode:
 #   mode = 0: Read
@@ -299,7 +305,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         # Rewrite new data into their files.
         
         with open(csl, "wb") as of:
-            of.write(int.to_bytes(character_set_length, 2, byteorder="little"))
+            of.write(int.to_bytes(character_set_length-1, 2, byteorder="little"))
         with open(cs, "wb") as of:
             ## Get the ASCII characters and append them to a list then skip the rest
             for i in range(character_set_length - 1):
@@ -317,11 +323,23 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
             for i in range(current_nol):
                 of.write(string_offset[i].to_bytes(4, "little"))
         with open(sd, "wb") as of:
+            buffer = b''
             for i in range(len(string_data)):
-                of.write(string_data[i].to_bytes(2, "little"))  
+                buffer += string_data[i].to_bytes(2, "little")
+                paddsize = line_fill(len(buffer), 16) # Measure needed padding at end of file
+            for j in range(paddsize):
+                buffer += b'\00'
+            of.write(buffer)
     print()
 
+def repack_files():
+    finished_file = basedir + "/" + "end.unk"
 
+    with open(finished_file, "wb") as of:
+        for path in path_file_list:
+            with open(path, "rb") as section:
+                data = section.read()
+                of.write(data)
 
 current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
@@ -331,13 +349,7 @@ manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7
 
 
 # Repack whole file
-print()
-finished_file = current_folder+ "/" + "end.unk"
-
-with open(finished_file, "wb") as of:
-    for path in path_file_list:
-        with open(path, "rb") as section:
-            of.write(section.read())
+repack_files()
 
 
 

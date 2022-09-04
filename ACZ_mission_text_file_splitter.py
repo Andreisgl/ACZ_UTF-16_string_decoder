@@ -175,7 +175,7 @@ def export_split_file(split_file_list, output_folder):
     # Interstitial 2
     file_prefix = output_folder + "/" + str(file_counter).zfill(4) + interstitial2_tag
     with open(file_prefix + all_filenames[3]+ file_ext, "wb") as of:
-        of.write(split_file[1])
+        of.write(split_file[3])
     file_counter += 1
 
 
