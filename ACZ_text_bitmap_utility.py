@@ -19,13 +19,13 @@ basedir = os.getcwd()
 current_folder = basedir
 bmp_out_folder = basedir + "/" + "bmp_out"
 
-character_set_file = "0003_speaker_cs.spl"
-character_set_length_file = "0001_speaker_csl.spl"
-bmp_file = "0008_interstitial1_interstitial1.spl"
+#character_set_file = "0003_speaker_cs.spl"
+#character_set_length_file = "0001_speaker_csl.spl"
+#bmp_file = "0008_interstitial1_interstitial1.spl"
 
-# character_set_file = "0012_radio_cs.spl"
-#character_set_length_file = "0010_radio_csl.spl"
-# bmp_file = "0017_interstitial2_interstitial2.spl"
+character_set_file = "0012_radio_cs.spl"
+character_set_length_file = "0010_radio_csl.spl"
+bmp_file = "0017_interstitial2_interstitial2.spl"
 
 
 # Gets a character set file and it's corresponding bitmap section file.
@@ -75,7 +75,8 @@ def splice_bitmap(cs, csl, bitmap_data_file):
         file_name += hex(int.from_bytes(character_set[i], "little"))
         file_name += ".bmp"
         with open(file_name, "wb") as of:
-            of.write(file_contents[i])
+            if not os.path.exists(file_name):
+                of.write(file_contents[i])
 
     print()
 
