@@ -17,7 +17,7 @@ import subprocess
 
 basedir = os.getcwd()
 current_folder = basedir
-bmp_out_folder = basedir + "/" + "bmp_out"
+bmp_out_folder = basedir + "/" + "bmp_lib"
 
 #character_set_file = "0003_speaker_cs.spl"
 #character_set_length_file = "0001_speaker_csl.spl"
