@@ -2,3 +2,7 @@
 *.unk
 *.dbg
 *.spl
+
+*.raw
+*.bmp
+*.bak
