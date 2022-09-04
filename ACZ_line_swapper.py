@@ -367,7 +367,7 @@ manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7
 
 
 # Repack whole file
-#repack_files()
+repack_files()
 
 
 
