@@ -22,6 +22,8 @@ path_file_list = [] # Filenames with path in folder
 
 sil = [] # Short fo "section_index_list" Index of each section in the previous lists
 
+bmp_out_folder = "bmp_lib"
+
 # List of file names needed for the job
 speaker_nol = "speaker_nol"
 speaker_csl = "speaker_csl"
@@ -48,8 +50,10 @@ interstitial2_interstitial2 = "interstitial2_interstitial2"
 def choose_working_folder():
     global basedir
     global folders_list
-    folder_blacklist = [".git"] # Remove these folders from folder list
+    global bmp_out_folder
+    folder_blacklist = [".git", "storage", bmp_out_folder] # Remove these folders from folder list
                                 # AKA ".git" is annoying
+    bmp_out_folder = basedir + "/" + bmp_out_folder
     folders_list = os.listdir()
     try:
         for i in range(len(folders_list)):
@@ -64,7 +68,7 @@ def choose_working_folder():
     if len(folders_list) > 1:
         print("Choose folder to work on!: ")
         for i in range(len(folders_list)):
-            print(i + " - " + folders_list[i])
+            print(str(i) + " - " + folders_list[i])
         choice = input("Choice: ")
         if choice in range(len(folders_list)):
             print(choice)
@@ -208,7 +212,7 @@ def line_fill(curr_offset, line_size):
 # First parameter = mode:
 #   mode = 0: Read
 #   mode = 1: Write
-def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
+def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
     unk = current_folder + "/" + file_list[unk]
@@ -217,6 +221,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
     padd1 = current_folder + "/" + file_list[padd1]
     so = current_folder + "/" + file_list[so]
     sd = current_folder + "/" + file_list[sd]
+    intrs = current_folder + "/" + file_list[intrs]
 
     number_of_lines = 0
     character_set_length = 0
@@ -224,6 +229,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
     string_lengths = []
     string_offset = []
     string_data = []
+    bmp_data = ""
 
     test_file = "line_export.txt"
 
@@ -258,7 +264,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
             ## The amount of characters in the string data is obtained by adding all string lenghts that are stored in the "str_string_length" list.
             for i in range(sum(string_lengths)):
                 string_data.append(int.from_bytes(of.read(2), "little"))
-
+                
         # Separate string data into lists
         encoded_lines = split_lines(number_of_lines, string_lengths, string_data)
         # Decode lists from to readable text
@@ -293,8 +299,8 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         #if number_of_lines != current_nol:
         #    print("HEY! The number of lines changed! Check file again!\n")
         #    print("The number of lines should be: " + str(number_of_lines))
-        #    print("The current number of is: " + str(current_nol))
-        #    input("I'll let that pass because I'm lazy. Press ENTER to continue")
+        #    print("\nThe current number of is: " + str(current_nol))
+        #    input("\nI'll let that pass because I'm lazy. Press ENTER to continue")
 
         character_set_length = len(new_character_set) + 1
         character_set = new_character_set
@@ -303,7 +309,6 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
         string_data = re_united_lines
 
         # Rewrite new data into their files.
-        
         with open(csl, "wb") as of:
             of.write(int.to_bytes(character_set_length-1, 2, byteorder="little"))
         with open(cs, "wb") as of:
@@ -330,7 +335,20 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd):
             for j in range(paddsize):
                 buffer += b'\00'
             of.write(buffer)
-    print()
+        
+        with open(intrs, "rb") as of: # Recover header
+            bmp_header = of.read(64)
+        with open(intrs, "wb") as of:
+            of.write(bmp_header) # Write header
+            for i in range(len(character_set)):
+                path = bmp_out_folder + "/"
+                path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
+                path += "_"
+                path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
+                path += ".bmp"
+
+                with open(path, "rb") as bmpf:
+                    of.write(bmpf.read())
 
 def repack_files():
     finished_file = basedir + "/" + "end.unk"
@@ -345,11 +363,11 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7]) # Test for speaker stuff
+manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
 
 
 # Repack whole file
-repack_files()
+#repack_files()
 
 
 

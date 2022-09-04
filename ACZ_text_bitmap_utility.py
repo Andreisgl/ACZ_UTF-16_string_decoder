@@ -75,8 +75,7 @@ def splice_bitmap(cs, csl, bitmap_data_file):
         file_name += hex(int.from_bytes(character_set[i], "little"))
         file_name += ".bmp"
         with open(file_name, "wb") as of:
-            if not os.path.exists(file_name):
-                of.write(file_contents[i])
+            of.write(file_contents[i])
 
     print()
 
