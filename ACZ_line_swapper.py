@@ -169,7 +169,13 @@ def line_decoder(encoded_lines, character_set):
     for i in range(len(encoded_lines)):
         current_line = []
         for j in range(len(encoded_lines[i])):
-            current_line.append(character_set[encoded_lines[i][j]])
+            try:
+                current_line.append(character_set[encoded_lines[i][j]])
+            except IndexError:
+                if encoded_lines[i][j] == 65535: # Space
+                    current_line.append(" ")
+                else:
+                    input("Unknown character! \n Press enter to continue")
         decoded_lines.append(current_line)
     return decoded_lines
 
@@ -222,8 +228,8 @@ def line_fill(curr_offset, line_size):
 #   0 = Read
 #   1 = Write
 # Second parameter: datamode. Choose between manipulating Speaker data or Radio data
-#   1 = Speaker
-#   2 = Radio
+#   0 = Speaker
+#   1 = Radio
 def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
@@ -244,12 +250,8 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
     bmp_data = ""
 
     test_file = ["line_speaker_export.txt", "line_radio_export.txt"]
-
+    test_file = test_file[datamode]
     if mode == 0: # Read mode
-        # If datamode is invalid, default to 1.
-        if test_file != 1 and test_file != 2:
-            test_file = 1
-        test_file = test_file[datamode]
         with open(nol, "rb") as of:
             number_of_lines = int.from_bytes(of.read(4), "little")
         with open(csl, "rb") as of:
@@ -375,11 +377,17 @@ def repack_files():
                 data = section.read()
                 of.write(data)
 
+def open_file(mode, datamode):
+    if datamode == 0:
+        manipulate_text(mode, datamode, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8])
+    elif datamode == 1:
+        manipulate_text(mode, datamode, sil[9], sil[10], sil[11], sil[12], sil[13], sil[14], sil[15], sil[16], sil[17])
+
 current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(1, 1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
+open_file(0, 1)
 
 
 # Repack whole file
