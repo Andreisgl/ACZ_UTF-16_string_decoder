@@ -25,20 +25,30 @@ bmp_out_speaker = bmp_out_folder + "/" + bmp_out_speaker
 bmp_out_radio = bmp_out_folder + "/" + bmp_out_radio
 bmp_out_folder = [bmp_out_folder, bmp_out_speaker, bmp_out_radio]
 
-#character_set_file = "0003_speaker_cs.spl"
-#character_set_length_file = "0001_speaker_csl.spl"
-#bmp_file = "0008_interstitial1_interstitial1.spl"
-
-character_set_file = "0012_radio_cs.spl"
-character_set_length_file = "0010_radio_csl.spl"
-bmp_file = "0017_interstitial2_interstitial2.spl"
 
 
+def file_chooser(output_folder):
+    # Chooses which files to get: Speaker or Radio.
+    # If invalid choice, defaults to speaker.
+    global character_set_file
+    global character_set_length_file
+    global bmp_file
+    if output_folder == 2:
+        character_set_file = "0012_radio_cs.spl"
+        character_set_length_file = "0010_radio_csl.spl"
+        bmp_file = "0017_interstitial2_interstitial2.spl"
+    else:
+        output_folder = 1
+        character_set_file = "0003_speaker_cs.spl"
+        character_set_length_file = "0001_speaker_csl.spl"
+        bmp_file = "0008_interstitial1_interstitial1.spl"
+    splice_bitmap(character_set_file, character_set_length_file, bmp_file, output_folder)
 # Gets a character set file and it's corresponding bitmap section file.
 # Splices bitmaps for each letter, organizes them into folder in UTF-16 order
 # output_folder: 
-    # 0 for Speaker
-    # 1 for Radio
+    # 0 for base folder
+    # 1 for Speaker
+    # 2 for Radio
 def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
     character_set = []
 
@@ -90,4 +100,4 @@ def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
     print()
 
 
-splice_bitmap(character_set_file, character_set_length_file, bmp_file, 0)
+file_chooser(1)

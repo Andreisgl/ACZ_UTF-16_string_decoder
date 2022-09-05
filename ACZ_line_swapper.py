@@ -222,9 +222,8 @@ def line_fill(curr_offset, line_size):
 #   0 = Read
 #   1 = Write
 # Second parameter: datamode. Choose between manipulating Speaker data or Radio data
-#   0 = Speaker
-#   1 = Radio
-#TODO: Apply datamode logic to write mode as well
+#   1 = Speaker
+#   2 = Radio
 def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
@@ -244,9 +243,13 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
     string_data = []
     bmp_data = ""
 
-    test_file = "line_export.txt"
+    test_file = ["line_speaker_export.txt", "line_radio_export.txt"]
 
     if mode == 0: # Read mode
+        # If datamode is invalid, default to 1.
+        if test_file != 1 and test_file != 2:
+            test_file = 1
+        test_file = test_file[datamode]
         with open(nol, "rb") as of:
             number_of_lines = int.from_bytes(of.read(4), "little")
         with open(csl, "rb") as of:
@@ -376,7 +379,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(1, 0, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
+manipulate_text(1, 1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
 
 
 # Repack whole file
