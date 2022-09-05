@@ -23,6 +23,8 @@ path_file_list = [] # Filenames with path in folder
 sil = [] # Short fo "section_index_list" Index of each section in the previous lists
 
 bmp_out_folder = "bmp_lib"
+bmp_out_speaker = "speaker"
+bmp_out_radio = "radio"
 
 # List of file names needed for the job
 speaker_nol = "speaker_nol"
@@ -51,9 +53,16 @@ def choose_working_folder():
     global basedir
     global folders_list
     global bmp_out_folder
+    global bmp_out_speaker
+    global bmp_out_radio
     folder_blacklist = [".git", "storage", bmp_out_folder] # Remove these folders from folder list
                                 # AKA ".git" is annoying
     bmp_out_folder = basedir + "/" + bmp_out_folder
+    bmp_out_speaker = bmp_out_folder + "/" + bmp_out_speaker
+    bmp_out_radio = bmp_out_folder + "/" + bmp_out_radio
+
+    # Facilitate folder calling
+    bmp_out_folder = [bmp_out_folder, bmp_out_speaker, bmp_out_radio]
     folders_list = os.listdir()
     try:
         for i in range(len(folders_list)):
@@ -210,9 +219,13 @@ def line_fill(curr_offset, line_size):
 
 # Receives each relevant section as parameter.
 # First parameter = mode:
-#   mode = 0: Read
-#   mode = 1: Write
-def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
+#   0 = Read
+#   1 = Write
+# Second parameter: datamode. Choose between manipulating Speaker data or Radio data
+#   0 = Speaker
+#   1 = Radio
+#TODO: Apply datamode logic to write mode as well
+def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
     nol = current_folder + "/" + file_list[nol]
     csl = current_folder + "/" + file_list[csl]
     unk = current_folder + "/" + file_list[unk]
@@ -341,7 +354,7 @@ def manipulate_text(mode, nol, csl, unk, cs, sls, padd1, so, sd, intrs):
         with open(intrs, "wb") as of:
             of.write(bmp_header) # Write header
             for i in range(len(character_set)):
-                path = bmp_out_folder + "/"
+                path = bmp_out_folder[datamode] + "/"
                 path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
                 path += "_"
                 path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
@@ -363,7 +376,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-manipulate_text(1, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
+manipulate_text(1, 0, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8]) # Test for speaker stuff
 
 
 # Repack whole file

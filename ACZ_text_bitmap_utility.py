@@ -18,6 +18,12 @@ import subprocess
 basedir = os.getcwd()
 current_folder = basedir
 bmp_out_folder = basedir + "/" + "bmp_lib"
+bmp_out_speaker = "speaker"
+bmp_out_radio = "radio"
+
+bmp_out_speaker = bmp_out_folder + "/" + bmp_out_speaker
+bmp_out_radio = bmp_out_folder + "/" + bmp_out_radio
+bmp_out_folder = [bmp_out_folder, bmp_out_speaker, bmp_out_radio]
 
 #character_set_file = "0003_speaker_cs.spl"
 #character_set_length_file = "0001_speaker_csl.spl"
@@ -30,8 +36,10 @@ bmp_file = "0017_interstitial2_interstitial2.spl"
 
 # Gets a character set file and it's corresponding bitmap section file.
 # Splices bitmaps for each letter, organizes them into folder in UTF-16 order
-
-def splice_bitmap(cs, csl, bitmap_data_file):
+# output_folder: 
+    # 0 for Speaker
+    # 1 for Radio
+def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
     character_set = []
 
     header = 64
@@ -67,6 +75,8 @@ def splice_bitmap(cs, csl, bitmap_data_file):
         print()
 
     # Export single letter bmp files
+    global bmp_out_folder
+    bmp_out_folder = bmp_out_folder[output_folder]
     if not os.path.exists(bmp_out_folder):
         os.mkdir(bmp_out_folder)
     for i in range(number_of_letters_bmp):
@@ -80,4 +90,4 @@ def splice_bitmap(cs, csl, bitmap_data_file):
     print()
 
 
-splice_bitmap(character_set_file, character_set_length_file, bmp_file)
+splice_bitmap(character_set_file, character_set_length_file, bmp_file, 0)
