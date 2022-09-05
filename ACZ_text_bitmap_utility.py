@@ -16,7 +16,7 @@ import textwrap
 import subprocess
 
 basedir = os.getcwd()
-current_folder = basedir
+current_folder = "0007_out"
 bmp_out_folder = basedir + "/" + "bmp_lib"
 bmp_out_speaker = "speaker"
 bmp_out_radio = "radio"
@@ -34,14 +34,14 @@ def file_chooser(output_folder):
     global character_set_length_file
     global bmp_file
     if output_folder == 2:
-        character_set_file = "0012_radio_cs.spl"
-        character_set_length_file = "0010_radio_csl.spl"
-        bmp_file = "0017_interstitial2_interstitial2.spl"
+        character_set_file = current_folder + "/" + "0012_radio_cs.spl"
+        character_set_length_file = current_folder + "/" + "0010_radio_csl.spl"
+        bmp_file = current_folder + "/" + "0017_interstitial2_interstitial2.spl"
     else:
         output_folder = 1
-        character_set_file = "0003_speaker_cs.spl"
-        character_set_length_file = "0001_speaker_csl.spl"
-        bmp_file = "0008_interstitial1_interstitial1.spl"
+        character_set_file = current_folder + "/" + "0003_speaker_cs.spl"
+        character_set_length_file = current_folder + "/" + "0001_speaker_csl.spl"
+        bmp_file = current_folder + "/" + "0008_interstitial1_interstitial1.spl"
     splice_bitmap(character_set_file, character_set_length_file, bmp_file, output_folder)
 # Gets a character set file and it's corresponding bitmap section file.
 # Splices bitmaps for each letter, organizes them into folder in UTF-16 order
