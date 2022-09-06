@@ -327,6 +327,32 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
         string_data = re_united_lines
 
         # Rewrite new data into their files.
+        with open(intrs, "rb") as of: # Recover header
+            bmp_header = of.read(64)
+        with open(intrs, "wb") as of:
+            of.write(bmp_header) # Write header
+            for i in range(len(character_set)):
+                path = bmp_out_folder[datamode + 1] + "/"
+                path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
+                path += "_"
+                path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
+                path += ".bmp"
+                
+                # Data for character length in the beggining
+                # and end of character set lines
+                addit_data = []
+                try:
+                    with open(path, "rb") as bmpf:
+                        aux_list = []
+                        aux_list.append(bmpf.read(8))
+                        aux_list.append(bmpf.read(6))
+                        addit_data.append(aux_list)
+                        of.write(bmpf.read(512))
+                except FileNotFoundError:
+                    print(".bmp not found! Using placeholder...")
+                    for i in range(512):
+                        of.write(b'\xee')
+
         with open(csl, "wb") as of:
             of.write(int.to_bytes(character_set_length-1, 2, byteorder="little"))
         with open(cs, "wb") as of:
@@ -354,31 +380,7 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
                 buffer += b'\00'
             of.write(buffer)
         
-        with open(intrs, "rb") as of: # Recover header
-            bmp_header = of.read(64)
-        with open(intrs, "wb") as of:
-            of.write(bmp_header) # Write header
-            for i in range(len(character_set)):
-                path = bmp_out_folder[datamode + 1] + "/"
-                path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
-                path += "_"
-                path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
-                path += ".bmp"
-                
-                # Data for character length in the beggining
-                # and end of character set lines
-                addit_data = []
-                try:
-                    with open(path, "rb") as bmpf:
-                        aux_list = []
-                        aux_list.append(bmpf.read(8))
-                        aux_list.append(bmpf.read(6))
-                        addit_data.append(aux_list)
-                        of.write(bmpf.read(512))
-                except FileNotFoundError:
-                    print(".bmp not found! Using placeholder...")
-                    for i in range(512):
-                        of.write(b'\xee')
+
 
 def repack_files():
     finished_file = basedir + "/" + "end.unk"
