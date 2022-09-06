@@ -359,7 +359,7 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
         with open(intrs, "wb") as of:
             of.write(bmp_header) # Write header
             for i in range(len(character_set)):
-                path = bmp_out_folder[datamode] + "/"
+                path = bmp_out_folder[datamode + 1] + "/"
                 path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
                 path += "_"
                 path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
@@ -387,7 +387,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(0, 1)
+open_file(1, 0)
 
 
 # Repack whole file
