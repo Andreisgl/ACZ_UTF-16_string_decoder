@@ -364,10 +364,17 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
                 path += "_"
                 path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
                 path += ".bmp"
-
+                
+                # Data for character length in the beggining
+                # and end of character set lines
+                addit_data = []
                 try:
                     with open(path, "rb") as bmpf:
-                        of.write(bmpf.read())
+                        aux_list = []
+                        aux_list.append(bmpf.read(8))
+                        aux_list.append(bmpf.read(6))
+                        addit_data.append(aux_list)
+                        of.write(bmpf.read(512))
                 except FileNotFoundError:
                     print(".bmp not found! Using placeholder...")
                     for i in range(512):
@@ -392,11 +399,11 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-# open_file(1, 0)
+open_file(1, 0)
 
 
 # Repack whole file
-repack_files()
+# repack_files()
 
 
 
