@@ -365,8 +365,13 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
                 path += str(hex(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")))
                 path += ".bmp"
 
-                with open(path, "rb") as bmpf:
-                    of.write(bmpf.read())
+                try:
+                    with open(path, "rb") as bmpf:
+                        of.write(bmpf.read())
+                except FileNotFoundError:
+                    print(".bmp not found! Using placeholder...")
+                    for i in range(512):
+                        of.write(b'\xee')
 
 def repack_files():
     finished_file = basedir + "/" + "end.unk"
@@ -387,7 +392,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 0)
+# open_file(1, 0)
 
 
 # Repack whole file
