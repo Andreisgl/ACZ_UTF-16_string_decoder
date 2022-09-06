@@ -67,11 +67,16 @@ def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
     with open(cs, "rb") as of:
         ## Get the ASCII characters and append them to a list then skip the rest
         of.seek(0)
+        addit_data = []
         for i in range(character_set_length):
-            beginning_section = of.read(8) # Contains character width info
+            aux_list = []
+            aux = of.read(8)
+            aux_list.append(aux) # Contains character width info
             char = of.read(2)
             character_set.append(char)
-            end_section = of.read(6) # Unknown info yet, but adding anyway
+            aux = of.read(6)
+            aux_list.append(aux) # Unknown info yet, but adding anyway
+            addit_data.append(aux_list)
     
     # Manipulate bitmap file
     with open(bitmap_data_file, "rb") as bmp:
@@ -97,8 +102,8 @@ def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
         with open(file_name, "wb") as of:
             # Write additional data to file. 14 bytes must be removed later
             # From beginning of image file.
-            of.write(beginning_section)
-            of.write(end_section)
+            of.write(addit_data[i][0])
+            of.write(addit_data[i][1])
 
             of.write(file_contents[i])
 

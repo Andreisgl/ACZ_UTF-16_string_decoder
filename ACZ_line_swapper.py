@@ -331,6 +331,7 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
             bmp_header = of.read(64)
         with open(intrs, "wb") as of:
             of.write(bmp_header) # Write header
+            addit_data = []
             for i in range(len(character_set)):
                 path = bmp_out_folder[datamode + 1] + "/"
                 path += str(int.from_bytes(character_set[i].encode("utf-8", "little"), "little")).zfill(5)
@@ -340,7 +341,6 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
                 
                 # Data for character length in the beggining
                 # and end of character set lines
-                addit_data = []
                 try:
                     with open(path, "rb") as bmpf:
                         aux_list = []
@@ -357,14 +357,11 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
             of.write(int.to_bytes(character_set_length-1, 2, byteorder="little"))
         with open(cs, "wb") as of:
             ## Get the ASCII characters and append them to a list then skip the rest
-            for i in range(character_set_length - 1):
-                padding1 = b'\x0A\00\x18\00\00\00\00\00'
-                padding2 = b'\x00\x00\xCD\xCD\xCD\xCD'
-                
-                of.write(padding1)
+            for i in range(character_set_length - 1):                
+                of.write(addit_data[i][0])
                 of.write(character_set[i].encode("utf-8", "little"))
                 of.write(b'\00')
-                of.write(padding2)
+                of.write(addit_data[i][1])
         with open(sls, "wb") as of:
             for i in range(current_nol):
                 of.write(string_lengths[i].to_bytes(2, "little"))
@@ -401,11 +398,11 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 0)
+#open_file(1, 0)
 
 
 # Repack whole file
-# repack_files()
+repack_files()
 
 
 
