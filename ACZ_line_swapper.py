@@ -396,9 +396,9 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
             for i in range(len(string_data)):
                 buffer += string_data[i].to_bytes(2, "little")
             paddsize = line_fill(len(buffer), 16) # Measure needed padding at end of file
-            for j in range(paddsize):
-                buffer += b'\00'
-                print()
+            #for j in range(paddsize):
+            #    buffer += b'\00'
+            #    print()
             of.write(buffer)
         
 
@@ -422,7 +422,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 1)
+open_file(1, 0)
 
 
 # Repack whole file
