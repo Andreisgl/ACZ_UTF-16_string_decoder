@@ -396,7 +396,7 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
             for i in range(len(string_data)):
                 buffer += string_data[i].to_bytes(2, "little")
             paddsize = line_fill(len(buffer), 16) # Measure needed padding at end of file
-            for j in range((paddsize+1) *2):
+            for j in range(paddsize):
                 buffer += b'\00'
                 print()
             of.write(buffer)
