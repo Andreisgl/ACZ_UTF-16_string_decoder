@@ -22,6 +22,11 @@ path_file_list = [] # Filenames with path in folder
 
 sil = [] # Short fo "section_index_list" Index of each section in the previous lists
 
+# Chars not present in the character set and what to translate them to:
+# 0: Line break, translates to '\'
+non_printable_chars = [b'\xFF\xFF']
+non_printable_chars_translate = ["|"]
+
 bmp_out_folder = "bmp_lib"
 bmp_out_speaker = "speaker"
 bmp_out_radio = "radio"
@@ -172,8 +177,11 @@ def line_decoder(encoded_lines, character_set):
             try:
                 current_line.append(character_set[encoded_lines[i][j]])
             except IndexError:
-                if encoded_lines[i][j] == 65535: # Space
-                    current_line.append(" ")
+                bytedata = int.to_bytes(encoded_lines[i][j], 2, "little")
+                if bytedata in non_printable_chars:
+                    current_line.append(non_printable_chars_translate[(non_printable_chars.index(
+                        bytedata))]
+                    )
                 else:
                     input("Unknown character! \n Press enter to continue")
         decoded_lines.append(current_line)
@@ -185,7 +193,9 @@ def line_re_encoder(recovered_lines):
     new_character_set = []
     for i in range(len(recovered_lines)):
         for j in range(len(recovered_lines[i])):
-            new_character_set.append(recovered_lines[i][j])
+            stringdata = recovered_lines[i][j]
+            if not stringdata in non_printable_chars_translate:
+                new_character_set.append(recovered_lines[i][j])
             new_character_set = [*set(new_character_set)]
             new_character_set.sort()
     
@@ -194,7 +204,18 @@ def line_re_encoder(recovered_lines):
     for i in range(len(recovered_lines)):
         current_line = []
         for j in range(len(recovered_lines[i])):
-            current_line.append(new_character_set.index(recovered_lines[i][j]))
+            stringdata = recovered_lines[i][j]
+            if stringdata in non_printable_chars_translate:
+                current_line.append(
+                    int.from_bytes(
+                        non_printable_chars[
+                            non_printable_chars_translate.index(stringdata)],
+                            "little")
+                )
+            else:
+                current_line.append(new_character_set.index(recovered_lines[i][j]))
+
+            
         encoded_list.append(current_line)
 
 
@@ -346,12 +367,14 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
                         aux_list = []
                         aux_list.append(bmpf.read(8))
                         aux_list.append(bmpf.read(6))
-                        addit_data.append(aux_list)
                         of.write(bmpf.read(512))
                 except FileNotFoundError:
-                    print(".bmp not found! Using placeholder...")
+                    print(path + " \nnot found! Using placeholder...")
+                    aux_list.append(b'\x05\x00\x10\x00\x00\x00\x00\x00')
+                    aux_list.append(b'\x00\x00\xCD\xCD\xCD\xCD')
                     for i in range(512):
                         of.write(b'\xee')
+                addit_data.append(aux_list)
 
         with open(csl, "wb") as of:
             of.write(int.to_bytes(character_set_length-1, 2, byteorder="little"))
@@ -372,9 +395,10 @@ def manipulate_text(mode, datamode, nol, csl, unk, cs, sls, padd1, so, sd, intrs
             buffer = b''
             for i in range(len(string_data)):
                 buffer += string_data[i].to_bytes(2, "little")
-                paddsize = line_fill(len(buffer), 16) # Measure needed padding at end of file
-            for j in range(paddsize):
+            paddsize = line_fill(len(buffer), 16) # Measure needed padding at end of file
+            for j in range((paddsize+1) *2):
                 buffer += b'\00'
+                print()
             of.write(buffer)
         
 
@@ -398,7 +422,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-#open_file(1, 0)
+open_file(1, 1)
 
 
 # Repack whole file
