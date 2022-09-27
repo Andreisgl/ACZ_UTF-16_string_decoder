@@ -407,10 +407,20 @@ def repack_files():
     finished_file = basedir + "/" + "end.unk"
 
     with open(finished_file, "wb") as of:
-        for path in path_file_list:
+        total_file_size = 0
+        for i in range(len(path_file_list)):
+            path = path_file_list[i]
+            file_name = short_file_list[i]
             with open(path, "rb") as section:
                 data = section.read()
                 of.write(data)
+                total_file_size += section.tell()
+            if file_name[-2:] == "sd": # Add paddings after any "sd" file
+                paddsize = line_fill(total_file_size, 16) # Measure needed padding
+                for j in range(paddsize):
+                    of.write(b'\00')
+                    total_file_size += 1
+
 
 def open_file(mode, datamode):
     if datamode == 0:
@@ -422,7 +432,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 0)
+open_file(1, 1)
 
 
 # Repack whole file
