@@ -428,15 +428,42 @@ def open_file(mode, datamode):
     elif datamode == 1:
         manipulate_text(mode, datamode, sil[9], sil[10], sil[11], sil[12], sil[13], sil[14], sil[15], sil[16], sil[17])
 
+
+def call_program():
+    print("ACE COMBAT ZERO line swapper\n")
+    invalid_answer_text = "Invalid Answer!"
+
+    while True:
+        print("\nWhere to work?")
+        print("0 - Speaker names\n1 - Radio lines")
+        datamode = int(input())
+        if datamode == 1 or datamode == 0:
+            break
+        else:
+            print(invalid_answer_text)
+    
+    while True:
+        print("\nWhat to do?")
+        print("0 - Read\n1 - Write")
+        mode = int(input())
+        if mode == 1 or mode == 0:
+            break
+        else:
+            print(invalid_answer_text)
+    
+    open_file(datamode, mode)
+
+
+
 current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 0)
 
+call_program()
 
 # Repack whole file
-repack_files()
+#repack_files()
 
 
 
