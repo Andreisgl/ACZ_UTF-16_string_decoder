@@ -432,7 +432,7 @@ current_folder = choose_working_folder()
 current_folder = "./" + folders_list[current_folder]
 check_files_in_folder()
 
-open_file(1, 1)
+open_file(1, 0)
 
 
 # Repack whole file
