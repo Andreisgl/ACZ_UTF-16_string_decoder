@@ -6,3 +6,5 @@
 *.raw
 #*.bmp
 *.bak
+
+/storage
