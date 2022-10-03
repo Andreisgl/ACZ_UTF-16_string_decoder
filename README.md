@@ -5,7 +5,7 @@ This set of tools aid the manipulation of radio text data.
 
 ## ACZ_mission_text_file_splitter.py:
   Splits the mission's text file into a folder. It is hard-coded to unpack the English text, "0007.unk"
-  Output folder is <filename>_out, containing each section of the file separated for easier manipulation.
+  Output folder is ""filename"_out", containing each section of the file separated for easier manipulation.
   Must be the first program to be run.
 
 ## ACZ_line_swapper.py:
