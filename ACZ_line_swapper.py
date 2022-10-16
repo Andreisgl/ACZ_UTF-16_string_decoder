@@ -451,7 +451,7 @@ def call_program():
         else:
             print(invalid_answer_text)
     
-    open_file(datamode, mode)
+    open_file(mode, datamode)
 
 
 
@@ -463,7 +463,7 @@ check_files_in_folder()
 call_program()
 
 # Repack whole file
-#repack_files()
+repack_files()
 
 
 
