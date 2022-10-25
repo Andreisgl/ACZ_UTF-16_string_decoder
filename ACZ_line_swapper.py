@@ -183,7 +183,7 @@ def line_decoder(encoded_lines, character_set):
                         bytedata))]
                     )
                 else:
-                    input("Unknown character! \n Press enter to continue")
+                    input("Unknown character! \n Press enter to skip...")
         decoded_lines.append(current_line)
     return decoded_lines
 
@@ -421,7 +421,6 @@ def repack_files():
                     of.write(b'\00')
                     total_file_size += 1
 
-
 def open_file(mode, datamode):
     if datamode == 0:
         manipulate_text(mode, datamode, sil[0], sil[1], sil[2], sil[3], sil[4], sil[5], sil[6], sil[7], sil[8])
@@ -442,7 +441,9 @@ def call_program():
         else:
             print(invalid_answer_text)
     
+    print("Opening speaker names...")
     open_file(mode, 0)
+    print("Opening radio lines...")
     open_file(mode, 1)
 
 
