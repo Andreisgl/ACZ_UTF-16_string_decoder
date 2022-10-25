@@ -110,4 +110,5 @@ def splice_bitmap(cs, csl, bitmap_data_file, output_folder):
     print()
 
 
+file_chooser(1)
 file_chooser(2)
