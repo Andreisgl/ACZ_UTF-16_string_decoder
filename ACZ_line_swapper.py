@@ -432,15 +432,6 @@ def open_file(mode, datamode):
 def call_program():
     print("ACE COMBAT ZERO line swapper\n")
     invalid_answer_text = "Invalid Answer!"
-
-    while True:
-        print("\nWhere to work?")
-        print("0 - Speaker names\n1 - Radio lines")
-        datamode = int(input())
-        if datamode == 1 or datamode == 0:
-            break
-        else:
-            print(invalid_answer_text)
     
     while True:
         print("\nWhat to do?")
@@ -451,7 +442,8 @@ def call_program():
         else:
             print(invalid_answer_text)
     
-    open_file(mode, datamode)
+    open_file(mode, 0)
+    open_file(mode, 1)
 
 
 
