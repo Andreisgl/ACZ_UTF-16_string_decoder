@@ -9,7 +9,7 @@ This set of tools aid the manipulation of radio text data.
   Must be the first program to be run.
 
 ## ACZ_line_swapper.py:
-  Reads/modifies the previous folder text sections. Choose whether to work with the speaker names or radio lines.
+  Reads/modifies the previous folder text sections.
   MODES:
     
     0 - Read: Reads the unpacked folder and export contained text (names or lines) to a .txt file
