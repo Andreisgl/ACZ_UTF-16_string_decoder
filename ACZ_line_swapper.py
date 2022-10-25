@@ -24,8 +24,8 @@ sil = [] # Short fo "section_index_list" Index of each section in the previous l
 
 # Chars not present in the character set and what to translate them to:
 # 0: Line break, translates to '\'
-non_printable_chars = [b'\xFF\xFF']
-non_printable_chars_translate = ["|"]
+non_printable_chars = [b'\xFF\xFF', b'\x90\xE8', b'`\xf0']
+non_printable_chars_translate = ["|", "¹", "²"]
 
 bmp_out_folder = "bmp_lib"
 bmp_out_speaker = "speaker"
@@ -179,11 +179,12 @@ def line_decoder(encoded_lines, character_set):
             except IndexError:
                 bytedata = int.to_bytes(encoded_lines[i][j], 2, "little")
                 if bytedata in non_printable_chars:
+                    print("Non-printable character detected: " + str(bytedata))
                     current_line.append(non_printable_chars_translate[(non_printable_chars.index(
                         bytedata))]
                     )
                 else:
-                    input("Unknown character! \n Press enter to skip...")
+                    input("Unknown character: " + str(bytedata) + "\nPress enter to skip...")
         decoded_lines.append(current_line)
     return decoded_lines
 
