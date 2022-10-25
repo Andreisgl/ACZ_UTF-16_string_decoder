@@ -29,10 +29,17 @@ def padding_skip(current_position, l_file):
     l_file.seek(current_position, 0)
     while True:
         zero_check = int.from_bytes(l_file.read(2), "little")
+        TELLER = l_file.tell()
         if zero_check != 0:
             l_file.seek(-2, 1)
             break
         else:
+            aux = l_file.tell()
+            file_end = l_file.seek(0, 2)
+            if aux == file_end:
+                break
+            else:
+                l_file.seek(aux)
             pass
     skip_to = l_file.seek(l_file.tell(), 0)
     return skip_to
@@ -109,7 +116,7 @@ def file_splitter():
     speaker_data_list = text_splitter(0)
     # Skip the bitmap sheet and palette data for SPEAKER_ID strings and jump to where the mission-relevant string data is located
     voice_lines_position = (int.from_bytes(speaker_data_list[1], "little") * 512) + 64 + speaker_data_list[8]
-    voice_data_list = text_splitter(voice_lines_position)
+    voice_data_list = text_splitter(voice_lines_position + 16)
 
     # Obtain interstitials:
     with open(lines_file, "rb") as lf:
